@@ -30,27 +30,24 @@ function pdDialogue.wrap(lines, width, font)
 
         if line == "" or font:getTextWidth(line) <= width then
             table.insert(result, line)
-            goto continue
-        end
-
-        for word in line:gmatch("%S+") do
-            local wordWidth = font:getTextWidth(word)
-            local newLine = currentLine .. (currentLine ~= "" and " " or "") .. word
-            local newWidth = font:getTextWidth(newLine)
-
-            if newWidth >= width then
+        else
+            for word in line:gmatch("%S+") do
+                local wordWidth = font:getTextWidth(word)
+                local newLine = currentLine .. (currentLine ~= "" and " " or "") .. word
+                local newWidth = font:getTextWidth(newLine)
+    
+                if newWidth >= width then
+                    table.insert(result, currentLine)
+                    currentWidth, currentLine = wordWidth, word
+                else
+                    currentWidth, currentLine = newWidth, newLine
+                end
+            end
+    
+            if currentWidth ~= 0 then
                 table.insert(result, currentLine)
-                currentWidth, currentLine = wordWidth, word
-            else
-                currentWidth, currentLine = newWidth, newLine
             end
         end
-
-        if currentWidth ~= 0 then
-            table.insert(result, currentLine)
-        end
-
-        ::continue::
     end
 
     return result

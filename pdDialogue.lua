@@ -206,8 +206,12 @@ end
 pdDialogueBox = {}
 class("pdDialogueBox").extends()
 
-function pdDialogueBox.buttonPrompt(x, y)
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+function pdDialogueBox.buttonPrompt(x, y, drawMode)
+    if drawMode ~= nil then
+        gfx.setImageDrawMode(drawMode)
+    else
+        gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    end
     gfx.getSystemFont():drawText("Ⓐ", x, y)
 end
 
@@ -369,6 +373,14 @@ function pdDialogueBox:getSpeed()
     return self.speed
 end
 
+function pdDialogueBox:setTextDrawMode(drawMode)
+    self.drawMode = drawMode
+end
+
+function pdDialogueBox:getTextDrawMode()
+    return self.drawMode
+end
+
 function pdDialogueBox:restartDialogue()
     self.currentPage = 1
     self.currentChar = 1
@@ -423,7 +435,11 @@ function pdDialogueBox:drawBackground(x, y)
 end
 
 function pdDialogueBox:drawText(x, y, text)
-    gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    if self.drawMode ~= nil then
+        gfx.setImageDrawMode(self.drawMode)
+    else
+        gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    end
     if self.font ~= nil then
         -- variable will be table if a font family
         if type(self.font) == "table" then
@@ -439,7 +455,7 @@ function pdDialogueBox:drawText(x, y, text)
 end
 
 function pdDialogueBox:drawPrompt(x, y)
-    pdDialogueBox.buttonPrompt(x + self.width - 20, y + self.height - 20)
+    pdDialogueBox.buttonPrompt(x + self.width - 20, y + self.height - 20, self.drawMode)
 end
 
 function pdDialogueBox:draw(x, y)
@@ -617,6 +633,10 @@ pdDialogue.DialogueBox_KeyValueMap = {
     speed={
         set=function(value) pdDialogue.DialogueBox:setSpeed(value) end,
         get=function() return pdDialogue.DialogueBox:getSpeed() end
+    },
+    textDrawMode={
+        set = function (value) pdDialogue.DialogueBox:setTextDrawMode(value) end,
+        get = function () return pdDialogue.DialogueBox:getTextDrawMode() end
     },
     drawBackground={
         set=function(func) pdDialogue.DialogueBox_Callbacks["drawBackground"] = func end,
